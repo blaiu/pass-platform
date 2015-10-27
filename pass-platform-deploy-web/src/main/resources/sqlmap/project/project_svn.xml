@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ProjectSvnMapper">
+
+	<resultMap id="ProjectSvnMapper" type="com.gome.autodeploy.domain.project.ProjectSvn">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="PROJECT_ID" property="projectId" jdbcType="INTEGER"/>
+		<result column="SVN_ADDRESS_TRUNK" property="svnAddressTrunk" jdbcType="VARCHAR"/>
+		<result column="SVN_USER_TRUNK" property="svnUserTrunk" jdbcType="VARCHAR"/>
+		<result column="SVN_PASSWORD" property="svnPasswordTrunk" jdbcType="VARCHAR"/>
+		<result column="SVN_ADDRESS_BRANCH" property="svnAddressBranch" jdbcType="VARCHAR"/>
+		<result column="SVN_USER_BRANCH" property="svnUserBranch" jdbcType="VARCHAR"/>
+		<result column="SVN_PASSWORD_BRANCH" property="svnPasswordBranch" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<insert id="addProjectSvn" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.project.ProjectSvn">
+		insert into tb_project_svn (
+			PROJECT_ID, 
+			SVN_ADDRESS_TRUNK, SVN_USER_TRUNK, SVN_PASSWORD, 
+			SVN_ADDRESS_BRANCH, SVN_USER_BRANCH, SVN_PASSWORD_BRANCH,
+			CREATE_TIME, CREATE_USER, UPDATE_USER, UPDATE_TIME
+		) values (
+			#{projectId}, 
+			#{svnAddressTrunk}, #{svnUserTrunk}, #{svnPasswordTrunk},
+			#{svnAddressBranch}, #{svnUserBranch}, #{svnPasswordBranch},
+			now(), #{createUser}, #{updateUser}, now()
+		)
+	</insert>
+	
+	<update id="modifyProjectSvn" parameterType="com.gome.autodeploy.domain.project.ProjectSvn">
+		update tb_project_svn set update_time = now(), update_user=#{updateUser}
+		<if test="null != svnAddressTrunk and '' != svnAddressTrunk"> ,SVN_ADDRESS_TRUNK = #{svnAddressTrunk} </if>
+		<if test="null != svnUserTrunk and '' != svnUserTrunk"> ,SVN_USER_TRUNK = #{svnUserTrunk} </if>
+		<if test="null != svnPasswordTrunk and '' != svnPasswordTrunk"> ,SVN_PASSWORD = #{svnPasswordTrunk} </if>
+		<if test="null != svnAddressBranch and '' != svnAddressBranch"> ,SVN_ADDRESS_BRANCH = #{svnAddressBranch} </if>
+		<if test="null != svnUserBranch and '' != svnUserBranch"> ,SVN_USER_BRANCH = #{svnUserBranch} </if>
+		<if test="null != svnPasswordBranch and '' != svnPasswordBranch"> ,SVN_PASSWORD_BRANCH = #{svnPasswordBranch} </if>
+		where PROJECT_ID = #{projectId}
+	</update>
+
+	<select id="queryProjectSvn" resultMap="ProjectSvnMapper" parameterType="java.lang.Integer">
+		select 
+		id, PROJECT_ID,  SVN_ADDRESS_TRUNK, SVN_USER_TRUNK, SVN_PASSWORD,
+		SVN_ADDRESS_BRANCH, SVN_USER_BRANCH, SVN_PASSWORD_BRANCH,
+		CREATE_TIME, CREATE_USER, UPDATE_USER, UPDATE_TIME
+		from tb_project_svn
+		where PROJECT_ID = #{projectId}
+	</select>
+    
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+	default-lazy-init="false" default-autowire="byName">
+	
+	<bean id="applicationService" class="com.gome.autodeploy.service.app.impl.ApplicationServiceImpl"/>
+	<bean id="onlineService" class="com.gome.autodeploy.service.online.impl.OnlineServiceImpl"/>
+	<bean id="deployService" class="com.gome.autodeploy.service.deploy.impl.DeployServiceImpl"/>
+	<bean id="dictionaryService" class="com.gome.autodeploy.service.common.impl.DictionaryServiceImpl"/>
+	<bean id="userService" class="com.gome.autodeploy.service.auth.impl.UserServiceImpl"/>
+	
+	<bean id="containerConfigService" class="com.gome.autodeploy.service.deploy.impl.ContainerConfigServiceImpl"/>
+	<bean id="projectService" class="com.gome.autodeploy.service.project.impl.ProjectServiceImpl"/>
+	<bean id="projectSvnService" class="com.gome.autodeploy.service.project.impl.ProjectSvnServiceImpl"/>
+	<bean id="projectPackageService" class="com.gome.autodeploy.service.project.impl.ProjectPackageServiceImpl"/>
+	
+	<bean id="appService" class="com.gome.autodeploy.service.app.impl.AppServiceImpl"/>
+	<bean id="appFacade" class="com.gome.autodeploy.service.app.impl.AppFacadeImpl"/>
+	<bean id="appExpansionService" class="com.gome.autodeploy.service.app.impl.AppExpansionServiceImpl"/>
+	
+	<bean id="volumeService" class="com.gome.autodeploy.service.volume.impl.VolumeServiceImpl"/>
+	
+    
+</beans>

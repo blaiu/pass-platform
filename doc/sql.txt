@@ -1,0 +1,80 @@
+ALTER TABLE `tb_project`
+	ADD COLUMN `PROJECT_SPELL` VARCHAR(20) NULL DEFAULT NULL AFTER `IS_DEL`;
+	
+drop table if exists TB_APP;
+
+/*==============================================================*/
+/* Table: TB_APP                                                */
+/*==============================================================*/
+create table TB_APP
+(
+   ID                   int not null auto_increment,
+   APP_NAME             varchar(20),
+   PACKAGE_ID           int,
+   PROJECT_ID           int,
+   IMAGE_NAME           varchar(100),
+   SERVER_PORT          varchar(200),
+   HOST_PORT            varchar(200),
+   POD_LABEL            varchar(100),
+   APP_STATUS           int,
+   primary key (ID)
+);
+drop table if exists TB_TEST_DEPLOY_RESOURCES;
+
+/*==============================================================*/
+/* Table: TB_TEST_DEPLOY_RESOURCES                              */
+/*==============================================================*/
+create table TB_TEST_DEPLOY_RESOURCES
+(
+   ID                   int not null auto_increment,
+   APP_ID               int,
+   PACKAGE_ID           int,
+   DEPLOY_IP            varchar(20),
+   POD_LABEL            varchar(64),
+   IS_DEL               int,
+   STATUS               int,
+   IMAGE_NAME           varchar(100),
+   POD_NAME             varchar(100),
+   primary key (ID)
+);
+
+
+
+drop table if exists TB_APP;
+
+/*==============================================================*/
+/* Table: TB_APP          新增外部IP，内部IP                                       */
+/*==============================================================*/
+create table TB_APP
+(
+   ID                   int not null auto_increment,
+   APP_NAME             varchar(20),
+   PACKAGE_ID           int,
+   PROJECT_ID           int,
+   IMAGE_NAME           varchar(100),
+   SERVER_PORT          int,
+   HOST_PORT            int,
+   POD_LABEL            varchar(100),
+   APP_STATUS           int,
+   SERVER_IP            varchar(20),
+   HOST_IP              varchar(20),
+   primary key (ID)
+);
+
+ALTER TABLE `tb_app`
+	ADD COLUMN `APP_SPELL` VARCHAR(20) NULL AFTER `HOST_IP`;
+ALTER TABLE `tb_app`
+	ADD COLUMN `PROJECT_SPELL` VARCHAR(20) NULL DEFAULT NULL AFTER `APP_SPELL`;
+ALTER TABLE `tb_app`
+	ADD COLUMN `CONFIG_ID` INT NULL AFTER `PROJECT_SPELL`;
+
+/*用户表新增密码字段 pwd*/
+ALTER TABLE `tb_user`
+ADD COLUMN `PWD` VARCHAR(30) NOT NULL AFTER `IS_DEL`;
+/*项目表新增用户标识字段*/
+ALTER TABLE `tb_project`
+	ADD COLUMN `USER_ID` INT NULL AFTER `PROJECT_SPELL`;
+/*项目表新增是否持续集成标识*/
+ALTER TABLE `tb_project`
+	ADD COLUMN `CODESOURCE` INT(11) NULL DEFAULT NULL AFTER `USER_ID`;
+

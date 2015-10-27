@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ContainerConfigMapper">
+    
+    <resultMap id="ContainerConfigMap" type="com.gome.autodeploy.domain.deploy.ContainerConfig">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="CONFIG_NAME" property="configName" jdbcType="VARCHAR"/>
+		<result column="MEMORY" property="memory" jdbcType="INTEGER"/>
+		<result column="CPU" property="cpu" jdbcType="FLOAT"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+		
+	</resultMap>
+	
+	<sql id="Query_Column">
+		ID, CONFIG_NAME, MEMORY, CPU, IS_DEL
+	</sql>
+	
+	<insert id="addContainerConfig" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.deploy.ContainerConfig">
+		insert into tb_container_config (
+			CONFIG_NAME, MEMORY, CPU, IS_DEL
+		) values (
+			#{configName}, #{memory}, #{cpu}, 0
+		)
+	</insert>
+	
+	<update id="deleteContainerConfig" parameterType="com.gome.autodeploy.domain.deploy.ContainerConfig">
+		update tb_container_config set is_del=1 where id= #{id}
+	</update>
+	
+	<update id="modifyContainerConfig" parameterType="com.gome.autodeploy.domain.deploy.ContainerConfig">
+		update tb_container_config set
+		    config_name = #{configName} ,memory = #{memory} ,cpu = #{cpu}
+		where id= #{id}
+	</update>
+	
+	<select id="queryContainerConfig" resultMap="ContainerConfigMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			tb_container_config
+		where 
+			is_del = 0
+			<if test="id != null">
+			   and id= #{id}
+			</if>
+	</select>
+	
+	<select id="queryContainerConfigById" resultMap="ContainerConfigMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			tb_container_config
+		where 
+			id= #{id} and is_del = 0
+	</select>
+	
+</mapper>

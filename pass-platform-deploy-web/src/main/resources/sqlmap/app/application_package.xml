@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ApplicationPackageMapper">
+
+	<resultMap id="ApplicationPackageMap" type="com.gome.autodeploy.domain.app.ApplicationPackageVersion">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="APP_ID" property="appId" jdbcType="INTEGER"/>
+		<result column="PACKAGE_VERSION_NO" property="packageVersionNo" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<insert id="addApplicationPackageVersion" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.app.ApplicationPackageVersion">
+		insert into tb_package_version (
+			app_id, package_version_no, create_time, create_user
+		) values (
+			#{appId}, #{packageVersionNo}, #{createTime}, #{createUser}
+		)
+	</insert>
+	
+	<select id="queryApplicationPackageVersion" resultMap="ApplicationPackageVersionMap" parameterType="java.util.Map">
+		select 
+			id, app_id appId, package_version_no packageVersionNo, 
+			create_user createUser, create_time createTime 
+		from 
+			tb_package_version
+		where 
+			app_id = #{appId} 
+	</select>
+
+</mapper>

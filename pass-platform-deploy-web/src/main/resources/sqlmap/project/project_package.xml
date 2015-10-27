@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ProjectPackageMapper">
+
+	<resultMap id="ProjectPackageMap" type="com.gome.autodeploy.domain.project.ProjectPackage">
+		<result column="PACKAGE_ID" property="packageId" jdbcType="INTEGER"/>
+		<result column="PROJECT_ID" property="projectId" jdbcType="INTEGER"/>
+		<result column="PACKAGE_NAME" property="packageName" jdbcType="VARCHAR"/>
+		<result column="PACKAGE_PATH" property="packagePath" jdbcType="VARCHAR"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="TYPE" property="type" jdbcType="INTEGER"/>
+		<result column="VERSION_NO" property="versionNo" jdbcType="VARCHAR"/>
+		<result column="STATUS" property="status" jdbcType="INTEGER"/>
+		<result column="IMAGE_NAME" property="imageName" jdbcType="VARCHAR"/>
+		<result column="PROJECT_TYPE" property="projectType" jdbcType="INTEGER"/>
+		<result column="DEPLOY_TYPE" property="deployType" jdbcType="INTEGER"/>
+		<result column="OS_TYPE" property="osType" jdbcType="INTEGER"/>
+		<result column="BASIC_IMAGE" property="basicImage" jdbcType="VARCHAR"/>
+		<result column="MEMO" property="memo" jdbcType="VARCHAR"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<sql id="Query_Column">
+		PACKAGE_ID, PROJECT_ID, PACKAGE_NAME, PACKAGE_PATH, CREATE_USER, CREATE_TIME,
+		TYPE, VERSION_NO, STATUS, IMAGE_NAME, PROJECT_TYPE, DEPLOY_TYPE, OS_TYPE, BASIC_IMAGE,IS_DEL, MEMO
+	</sql>
+    
+	<select id="queryProjectPackage" resultMap="ProjectPackageMap" parameterType="java.util.Map">
+		select
+			<include refid="Query_Column"/>
+		from 
+			tb_project_package
+		where 1 = 1
+    	<if test="null != packageId"> and PACKAGE_ID = #{packageId} </if>
+    	<if test="null != createUser"> and CREATE_USER = #{createUser} </if>
+    	<if test="null != projectId"> and PROJECT_ID = #{projectId} </if>
+    	<if test="null != status"> and STATUS = #{status} </if>
+    	<if test="null != isDel"> and IS_DEL = #{isDel} </if>
+	</select>
+	
+	<select id="queryImage" resultMap="ProjectPackageMap" parameterType="java.util.Map">
+		select
+			IMAGE_NAME
+		from 
+			tb_project_package
+		where
+    	  PACKAGE_ID !=0
+	</select>
+	
+	<insert id="addProjectPackage" useGeneratedKeys="true" keyProperty="packageId" parameterType="com.gome.autodeploy.domain.project.ProjectPackage">
+		insert into tb_project_package (
+			PROJECT_ID, PACKAGE_NAME, PACKAGE_PATH, CREATE_USER, CREATE_TIME,
+			TYPE, VERSION_NO, STATUS, IMAGE_NAME, PROJECT_TYPE, DEPLOY_TYPE, OS_TYPE, BASIC_IMAGE,IS_DEL, MEMO
+		) values (
+			#{projectId}, #{packageName}, #{packagePath}, #{createUser}, now(), 
+			#{type}, #{versionNo}, 0, #{imageName}, #{projectType}, #{deployType}, #{osType}, #{basicImage}, #{isDel}, #{memo}
+		)
+	</insert>
+	
+	<delete id="removeProjectPackage" parameterType="java.util.Map">
+		update tb_project_package set IS_DEL = 1 where PACKAGE_ID = #{packageId}
+	</delete>
+	
+	<update id="updateProjectPackageStatus" parameterType="java.util.Map">
+		update tb_project_package set status = -1 where 
+		PROJECT_ID = #{projectId}
+		and CREATE_USER = #{createUser}
+		and status = 0
+	</update>
+	
+	<update id="updateProjectPackage" parameterType="com.gome.autodeploy.domain.project.ProjectPackage">
+		update tb_project_package set IMAGE_NAME = #{imageName} , BASIC_IMAGE = #{basicImage} where PROJECT_ID = #{projectId}
+	</update>
+	
+	 <select id="queryAppPackageById" resultMap="ProjectPackageMap" parameterType="java.lang.Integer">
+		select
+			*
+		from 
+			tb_project_package
+		where
+    	  PACKAGE_ID =#{id}  
+	</select>
+	
+	<select id="queryAppPackageByVersionNo" resultMap="ProjectPackageMap" parameterType="java.lang.String">
+		select
+			PACKAGE_ID
+		from 
+			tb_project_package
+		where
+    	  VERSION_NO =#{versionNo}  
+	</select>
+	
+	
+</mapper>

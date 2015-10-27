@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ApplicationResourceMapper">
+
+	<resultMap id="ApplicationResourceMap" type="com.gome.autodeploy.domain.app.ApplicationResource">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="APP_ID" property="appId" jdbcType="INTEGER"/>
+		<result column="STATUS" property="status" jdbcType="INTEGER"/>
+		<result column="IP" property="ip" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+	</resultMap>
+
+	<insert id="addApplicationResource" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+		insert into tb_application_resources (
+			APP_ID, STATUS, IP, CREATE_TIME, CREATE_USER
+		) values
+		<if test="null != list">
+            <foreach collection="list" index="index" item="item" separator=",">
+        	(#{item.appId}, #{item.status}, #{item.ip}, now(), #{item.createUser})
+            </foreach>
+        </if>
+        ON DUPLICATE KEY UPDATE id = id
+	</insert>
+	
+	<delete id="removeApplicationResource" parameterType="java.util.Map">
+		delete from tb_application_resources where id = #{id}
+	</delete>
+
+	<select id="queryApplicationResource" resultMap="ApplicationResourceMap" parameterType="java.util.Map">
+		select
+			 id, app_id, ip, CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER, IS_DEL
+		from 
+			tb_application_resources
+		where app_id = #{appId}
+	</select>
+    
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+	default-lazy-init="false" default-autowire="byName">
+	
+	<bean id="kubernetesApiClient" class="com.gome.passplatform.kubernetes.KubernetesApiClient">
+		<property name="defaultNamespaces" value="${kuber.default.namespace}"/>
+		<property name="endpointUrl" value="${kuber.url}"/>
+		<property name="registryDomain" value="${kuber.registry.domain}"/>
+		<property name="cephMonitors" value="${kuber.ceph.monitors}"/>
+		<property name="cephPool" value="${kuber.ceph.pool}"/>
+		<property name="cephUser" value="${kuber.ceph.user}"/>
+		<property name="keyring" value="${kuber.ceph.keyring}"/>
+		<property name="cephSecretRef" value="${kuber.ceph.secretRef}"/>
+	</bean>
+	
+	<bean id="expansionClient" class="com.gome.passplatform.kubernetes.ExpansionClient">
+		<property name="defaultNamespaces" value="${expansion.default.namespace}"/>
+		<property name="endpointUrl" value="${expansion.url}"/>
+	</bean>
+	
+	<bean id="cephClient" class="com.gome.passplatform.kubernetes.CephClient">
+		<property name="endpointUrl" value="${ceph.url}"/>
+	</bean>
+    
+</beans>

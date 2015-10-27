@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ApplicationMapper">
+
+	<resultMap id="ApplicationMap" type="com.gome.autodeploy.domain.app.Application">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="NAME" property="name" jdbcType="VARCHAR"/>
+		<result column="CHINESE_NAME" property="chineseName" jdbcType="VARCHAR"/>
+		<result column="APP_TYPE" property="appType" jdbcType="INTEGER"/>
+		<result column="APP_LEVEL" property="appLevel" jdbcType="INTEGER"/>
+		<result column="APP_CHIEF" property="appChief" jdbcType="VARCHAR"/>
+		<result column="DOMAIN_TYPE" property="domainType" jdbcType="INTEGER"/>
+		<result column="DOMAIN" property="domain" jdbcType="VARCHAR"/>
+		<result column="SYSTEM_ID" property="systemId" jdbcType="INTEGER"/>
+		<result column="SYSTEM_NAME" property="systemName" jdbcType="VARCHAR"/>
+		<result column="SYSTEM_CHIEF" property="systemChief" jdbcType="VARCHAR"/>
+		<result column="DEPARTMENT" property="department" jdbcType="VARCHAR"/>
+		<result column="PROJECT_MANAGER" property="projectManager" jdbcType="VARCHAR"/>
+		<result column="DEPLOY_TYPE" property="deployType" jdbcType="INTEGER"/>
+		<result column="DEPLOY_PATH" property="deployPath" jdbcType="VARCHAR"/>
+		<result column="COMPILE_TYPE" property="compileType" jdbcType="INTEGER"/>
+		<result column="STATUS" property="status" jdbcType="INTEGER"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+		<result column="REASON" property="reason" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<sql id="Query_Column">
+			ID, NAME, CHINESE_NAME,APP_TYPE, APP_LEVEL, APP_CHIEF,
+			DOMAIN_TYPE, DOMAIN, 
+			SYSTEM_ID, SYSTEM_NAME, SYSTEM_CHIEF, DEPARTMENT, PROJECT_MANAGER,
+			DEPLOY_TYPE, DEPLOY_PATH, 
+			COMPILE_TYPE, 
+			STATUS,
+			CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER, IS_DEL,
+			REASON, REMARK
+	</sql>
+	
+	<insert id="addApplication" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.app.Application">
+		insert into tb_application (
+			NAME, CHINESE_NAME,APP_TYPE, APP_LEVEL, APP_CHIEF,
+			DOMAIN_TYPE, DOMAIN, 
+			SYSTEM_ID, SYSTEM_NAME, SYSTEM_CHIEF, DEPARTMENT, PROJECT_MANAGER,
+			DEPLOY_TYPE, DEPLOY_PATH, 
+			COMPILE_TYPE, 
+			STATUS,
+			CREATE_TIME, CREATE_USER, UPDATE_TIME, UPDATE_USER, IS_DEL
+		) values (
+			#{name}, #{chineseName}, #{appType}, #{appLevel}, #{appChief}, 
+			#{domainType}, #{domain}, 
+			#{systemId}, #{systemName}, #{systemChief}, #{department},
+			#{deployType}, #{deployPath}, #{compileType},
+			#{status},
+			now(), #{createUser}, now(), #{createUser}, 0,
+			#{reason}, #{remark}
+		)
+	</insert>
+	
+	<update id="modifyApplication" parameterType="com.gome.autodeploy.domain.app.Application">
+		update tb_application set id = id
+		<if test="null != status"> ,status = #{status} </if>
+		<if test="null != reason and '' != reason"> ,reason = #{reason} </if>
+		<if test="null != remark and '' != remark"> ,remark = #{remark} </if>
+		where id = #{id} and status = 0
+	</update>
+	
+	<select id="queryApplicationCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+			 count(1) 
+		from 
+			tb_application
+		where is_del = 0
+		<if test="null != listIds">
+            and id in
+            <foreach collection="listIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    	<if test="null != appName and '' != appName"> and name = #{appName} </if>
+    	<if test="null != systemName and '' != systemName"> and system_name like '%${systemName}%' </if>
+		<if test="null != department and '' != department"> and department = #{department} </if>
+    	<if test="null != appLevel and '' != appLevel"> and app_level = #{appLevel} </if>
+    	<if test="null != status"> and status = #{status} </if>
+	</select>
+	
+	<select id="queryApplication" resultMap="ApplicationMap" parameterType="java.util.Map">
+		select
+			<include refid="Query_Column"/>
+		from 
+			tb_application
+		where is_del = 0
+		<if test="null != listIds">
+            and id in
+            <foreach collection="listIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    	<if test="null != systemName and '' != systemName"> and system_name like '%${systemName}%' </if>
+		<if test="null != department and '' != department"> and department = #{department} </if>
+    	<if test="null != appLevel and '' != appLevel"> and app_level = #{appLevel} </if>
+    	<if test="null != status"> and status = #{status} </if>
+    	<if test="null != limit"> limit #{startRow}, #{pageSize} </if>
+	</select>
+	
+</mapper>

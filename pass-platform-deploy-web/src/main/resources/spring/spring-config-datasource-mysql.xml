@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"
+	default-lazy-init="false" default-autowire="byName">
+	
+	<!-- 数据源配置, 使用 BoneCP 数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+  		<!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass -->
+  		<property name="driverClassName" value="${mysql.driver}" />
+ 
+	    <!-- 基本属性 url、user、password -->
+	    <property name="url" value="${mysql.url}"/>
+	    <property name="username" value="${mysql.username}"/>
+	    <property name="password" value="${mysql.password}"/>
+	  
+	    <!-- 初始化连接数 -->
+	    <property name="initialSize" value="${mysql.initialSize}"/>
+	    <!-- 最小空闲连接数 -->
+	    <property name="minIdle" value="${mysql.minIdle}"/>
+	    <!-- 最大空闲连接数 -->
+<!--         <property name="maxIdle" value="${mysql.maxIdle}"/> -->
+	    <!-- 最大并发连接数 -->
+	    <property name="maxActive" value="${mysql.maxActive}"/>
+	    <!-- 配置获取连接等待超时的时间 -->
+	    <property name="maxWait" value="${mysql.maxWait}"/>
+	    <!-- 超过时间限制是否回收 -->
+        <property name="removeAbandoned" value="${mysql.removeAbandoned}"/>
+        <!-- 超过时间限制多长； -->
+        <property name="removeAbandonedTimeout" value="${mysql.removeAbandonedTimeout}"/>
+	    <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+	    <property name="timeBetweenEvictionRunsMillis" value="${mysql.timeBetweenEvictionRunsMillis}"/>
+	    <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+	    <property name="minEvictableIdleTimeMillis" value="${mysql.minEvictableIdleTimeMillis}"/>
+	 	<!-- 用来检测是否有效的SQL -->
+	    <property name="validationQuery" value="${mysql.validationQuery}"/>
+	    <!-- 申请连接的时候检测 -->
+	    <property name="testWhileIdle" value="${mysql.testWhileIdle}"/>
+	    <!-- 申请连接时执行validationQuery检测连接是否有效，配置为true会降低性能 -->
+	    <property name="testOnBorrow" value="${mysql.testOnBorrow}"/>
+	    <!-- 归还连接时执行validationQuery检测连接是否有效，配置为true会降低性能  -->
+	    <property name="testOnReturn" value="${mysql.testOnReturn}"/>
+	 
+	    <!-- 打开PSCache，并且指定每个连接上PSCache的大小（Oracle使用）
+	    <property name="poolPreparedStatements" value="true" />
+	    <property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> -->
+	 
+	    <!-- 配置监控统计拦截的filters -->
+	  	<property name="filters" value="${mysql.filters}"/>
+ 		<property name="connectionProperties" value="${mysql.connectionProperties}" />
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/sqlmap/mybatis-config-mysql.xml" />
+	</bean>
+	
+<!-- 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"> -->
+<!--       	<constructor-arg index="0" ref="sqlSessionFactory"/> -->
+<!-- 	</bean> -->
+	
+	<bean id="baseDao" class="com.gome.autodeploy.dao.impl.BaseDao">
+		<property name="sqlSession" ref="sqlSessionFactory"/>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+    
+    <aop:config>
+        <aop:pointcut id="interceptorPointCuts" expression="execution(* com.gome.autodeploy.service.*.*(..))" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCuts" />        
+    </aop:config>
+    
+</beans>

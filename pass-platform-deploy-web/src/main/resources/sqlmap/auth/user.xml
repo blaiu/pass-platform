@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserMapper">
+
+	<resultMap id="UserMap" type="com.gome.autodeploy.domain.auth.User">
+		<result column="ID" property="userId" jdbcType="INTEGER"/>
+		<result column="NAME" property="userName" jdbcType="VARCHAR"/>
+		<result column="PWD" property="password" jdbcType="VARCHAR"/>
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR"/>
+		<result column="EMAIL" property="email" jdbcType="VARCHAR"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	<resultMap id="RoleMap" type="com.gome.autodeploy.domain.auth.Role">
+		<result column="ID" property="roleId" jdbcType="INTEGER"/>
+		<result column="ROLE" property="roleName" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="PermissionMap" type="com.gome.autodeploy.domain.auth.Permission">
+		<result column="ID" property="permissionId" jdbcType="INTEGER"/>
+		<result column="NAME" property="permissionName" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="ResourcesMap" type="com.gome.autodeploy.domain.auth.Resources">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="NAME" property="name" jdbcType="VARCHAR"/>
+		<result column="TYPE" property="type" jdbcType="INTEGER"/>
+		<result column="URL" property="url" jdbcType="VARCHAR"/>
+		<result column="PARENT_ID" property="parentId" jdbcType="INTEGER"/>
+		<result column="PARENT_IDS" property="parentIds" jdbcType="VARCHAR"/>
+		<result column="PERMISSION" property="permission" jdbcType="VARCHAR"/>
+		<result column="AVAILABLE" property="available" jdbcType="INTEGER"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+	</resultMap>
+	<resultMap id="UserLogin" type="com.gome.autodeploy.domain.auth.User">
+	    <result column="ID" property="userId" jdbcType="INTEGER"/>
+		<result column="NAME" property="userName" jdbcType="VARCHAR"/>
+		<result column="PWD" property="password" jdbcType="VARCHAR"/>
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR"/>
+		<result column="EMAIL" property="email" jdbcType="VARCHAR"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR"/>
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	
+	<select id="getUser" resultMap="UserMap" parameterType="java.util.HashMap">
+		select
+		   ID, NAME, PWD, MOBILE, EMAIL, CREATE_USER, CREATE_TIME, UPDATE_USER, UPDATE_TIME, IS_DEL
+		from 
+			tb_user
+		where  NAME = #{userName}
+		<if test="null != userId"> and id = #{userId} </if>
+	</select>
+	
+	<select id="queryUserRoles" resultMap="RoleMap" parameterType="java.util.HashMap">
+		select
+			r.ID, r.ROLE
+		from 
+			tb_user_group up 
+		inner join tb_group_role gr on up.GROUP_ID= gr.GROUP_ID
+		inner join tb_role r on r.ID = gr.ROLE_ID 
+		where up.USER_ID = #{userId}
+	</select>
+	
+	<select id="queryUserPermissions" resultMap="PermissionMap" parameterType="java.util.List">
+		select
+			ID, NAME
+		from 
+			tb_permission 
+		where ROLE_ID in
+	        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            	#{item}
+            </foreach>
+	</select>
+	
+	<select id="queryResources" resultMap="ResourcesMap">
+		select 
+		rs.ID, rs.NAME, rs.TYPE, rs.URL, rs.PARENT_ID, rs.PARENT_IDS, p.NAME permission, rs.AVAILABLE, rs.CREATE_USER, rs.CREATE_TIME, rs.UPDATE_USER, rs.UPDATE_USER, rs.IS_DEL
+		from tb_resources rs 
+			inner join tb_resources_permission rp on rs.ID = rp.RESOURCES_ID
+			inner join tb_permission p on p.ID = rp.PERMISSION_ID
+		where rs.IS_DEL = 0 and rs.AVAILABLE = 1
+	</select>
+	
+	<select id="queryUsersLogin"  resultMap="UserLogin" parameterType="java.util.HashMap" >
+	    select
+	       ID, NAME, PWD, MOBILE, EMAIL, CREATE_USER, CREATE_TIME, UPDATE_USER, UPDATE_TIME, IS_DEL
+        from 
+	        tb_user 
+	    where NAME = #{userName}
+	      and PWD = #{password}
+	</select>
+
+</mapper>

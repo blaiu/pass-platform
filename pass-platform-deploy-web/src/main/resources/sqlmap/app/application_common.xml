@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ApplicationCommonMapper">
+
+	<resultMap id="ApplicationCommonMap" type="com.gome.autodeploy.domain.app.ApplicationCommon">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="APP_ID" property="appId" jdbcType="INTEGER"/>
+		<result column="FILE_NAME" property="fileName" jdbcType="VARCHAR"/>
+		<result column="FILE_PATH" property="filePath" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<insert id="addApplicationCommon" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+		insert into tb_application_common (
+			APP_ID, FILE_NAME, FILE_PATH, CREATE_TIME, CREATE_USER
+		) values 
+		<if test="null != list">
+            <foreach collection="list" index="index" item="item" separator=",">
+        	(#{item.appId}, #{item.fileName}, #{item.filePath}, now(), #{item.createUser})
+            </foreach>
+        </if>
+        ON DUPLICATE KEY UPDATE ID = ID
+	</insert>
+	
+	<delete id="removeApplicationCommon" parameterType="java.util.Map">
+		delete from tb_application_common where id = #{id}
+	</delete>
+
+	<select id="queryApplicationMember" resultMap="ApplicationMemberMap" parameterType="java.util.Map">
+		select id, app_id, FILE_NAME, FILE_PATH, CREATE_TIME, CREATE_USER from tb_application_common
+		where app_id = #{appId}
+	</select>
+    
+</mapper>

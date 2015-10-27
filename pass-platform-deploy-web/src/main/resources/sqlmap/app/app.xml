@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppMapper">
+    
+    <resultMap id="AppMap" type="com.gome.autodeploy.domain.app.App">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="APP_NAME" property="appName" jdbcType="VARCHAR"/>
+		<result column="PACKAGE_ID" property="packageId" jdbcType="INTEGER"/>
+		<result column="PROJECT_ID" property="projectId" jdbcType="INTEGER"/>
+		<result column="IMAGE_NAME" property="imageName" jdbcType="VARCHAR"/>
+		<result column="SERVER_PORT" property="serverPort" jdbcType="INTEGER"/>
+		<result column="HOST_PORT" property="hostPort" jdbcType="INTEGER"/>
+		<result column="POD_LABEL" property="podLabel" jdbcType="VARCHAR"/>
+		<result column="APP_STATUS" property="appStatus" jdbcType="INTEGER"/>
+		<result column="SERVER_IP" property="serverIp" jdbcType="VARCHAR"/>
+		<result column="HOST_IP" property="hostIp" jdbcType="VARCHAR"/>
+		<result column="APP_SPELL" property="appSpell" jdbcType="VARCHAR"/>
+		<result column="PROJECT_SPELL" property="projectSpell" jdbcType="VARCHAR"/>
+		<result column="CONFIG_ID" property="configId" jdbcType="INTEGER"/>
+		<result column="CONTAINER_COUNT" property="containerCount" jdbcType="INTEGER"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+		<result column="EXPANSION_FLAG" property="expansionFlag" jdbcType="INTEGER"/>
+        
+        <result column="MEMO" property="memo" jdbcType="VARCHAR"/>
+	</resultMap>
+    
+	
+	<sql id="Query_Column">
+		ID, APP_NAME, PACKAGE_ID, PROJECT_ID, IMAGE_NAME, SERVER_PORT, HOST_PORT, POD_LABEL, APP_STATUS,SERVER_IP,HOST_IP,APP_SPELL,PROJECT_SPELL,CONFIG_ID,CONTAINER_COUNT,IS_DEL,EXPANSION_FLAG
+	</sql>
+	
+	
+	<select id="queryForAppList" resultMap="AppMap">  
+       SELECT  
+          app.*,  
+          p.MEMO  
+        FROM  
+          tb_app app
+          LEFT JOIN 
+          tb_project_package p  
+        ON  
+          app.PACKAGE_ID = p.PACKAGE_ID
+        WHERE
+          app.IS_DEL=0 
+    </select>  
+	
+	
+	<insert id="addApp" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.app.App">
+		insert into tb_app (
+			APP_NAME, PACKAGE_ID, PROJECT_ID, IMAGE_NAME, SERVER_PORT, HOST_PORT, POD_LABEL, APP_STATUS ,SERVER_IP ,HOST_IP,APP_SPELL,PROJECT_SPELL,CONFIG_ID,CONTAINER_COUNT,IS_DEL,EXPANSION_FLAG
+		) values (
+			#{appName}, #{packageId}, #{projectId}, #{imageName}, #{serverPort}, #{hostPort}, #{podLabel}, 1  , #{serverIp} , #{hostIp},#{appSpell},#{projectSpell},#{configId},#{containerCount},#{isDel},#{expansionFlag}
+		)
+	</insert>
+	
+	<delete id="deleteApp" parameterType="com.gome.autodeploy.domain.app.App">
+		update  tb_app set IS_DEL = '1' where id= #{id}
+	</delete>
+	<update id="modifyApp" parameterType="com.gome.autodeploy.domain.app.App">
+		update tb_app set
+		    app_name = #{appName}
+		where id= #{id}
+	</update>
+	<update id="upateAppDelFlag" parameterType="com.gome.autodeploy.domain.app.App">
+		update tb_app set
+		    IS_DEL = #{isDel}
+		where id= #{id}
+	</update>
+	<update id="modifyAppStatus" parameterType="com.gome.autodeploy.domain.app.App">
+		update tb_app set
+		    app_status = #{appStatus}
+		where id= #{id}
+	</update>
+	
+	<select id="queryApp" resultMap="AppMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			tb_app
+		where 
+			project_id=#{projectId} and IS_DEL = 0
+	</select>
+	
+	<select id="queryAppById" resultMap="AppMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			tb_app
+		where 
+			id= #{id} and IS_DEL = 0
+	</select>
+	
+	<select id="queryAppList" resultMap="AppMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			tb_app
+		where 
+			IS_DEL  != 1
+	</select>
+	
+	<select id="queryAppCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+			 count(1) 
+		from 
+			tb_app
+		where IS_DEL = 0
+	</select>
+	
+</mapper>

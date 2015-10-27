@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DeployTaskMapper">
+
+	<resultMap id="DeployTaskMap" type="com.gome.autodeploy.domain.deploy.DeployTask">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="APP_ID" property="appId" jdbcType="INTEGER"/>
+		<result column="TYPE" property="type" jdbcType="INTEGER"/>
+		<result column="APPROVAL_USER" property="approvalUser" jdbcType="VARCHAR"/>
+		<result column="APPROVAL_TIME" property="approvalTime" jdbcType="VARCHAR"/>
+		<result column="TITLE" property="title" jdbcType="VARCHAR"/>
+		<result column="PLAN_DEPLOY_TIME" property="planDeployTime" jdbcType="VARCHAR"/>
+		<result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+		<result column="VERSION_SRC" property="versionSrc" jdbcType="VARCHAR"/>
+		<result column="VERSION_NO" property="versionNo" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+		<result column="STATUS" property="status" jdbcType="INTEGER"/>
+		<result column="FINISH_TIME" property="finishTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="Query_Column">
+		ID, APP_ID, TYPE, APPROVAL_USER, APPROVAL_TIME,
+		TITLE, PLAN_DEPLOY_TIME, REMARK, VERSION_SRC, VERSION_NO,
+		CREATE_TIME, CREATE_USER, STATUS, FINISH_TIME
+	</sql>
+
+	<insert id="addDeployTask" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.deploy.DeployTask">
+		insert into TB_DEPLOY_TASK (
+			APP_ID, TYPE, APPROVAL_USER, APPROVAL_TIME, TITLE, 
+			PLAN_DEPLOY_TIME, REMARK,  
+			VERSION_SRC, VERSION_NO, CREATE_TIME, CREATE_USER,
+			STATUS, FINISH_TIME
+		) values (
+			#{appId}, #{type}, #{approvalUser}, #{approvalTime},
+			#{title}, #{planDeployTime}, #{remark},
+			#{versionSrc}, #{versionNo}, now(), #{createUser}, 
+			#{status}, now()
+		)
+	</insert>
+	
+	<update id="modifyDeployTask" parameterType="java.util.Map">
+		update TB_DEPLOY_TASK set status = #{status} where id = #{id}
+	</update>
+	
+	<select id="queryDeployTaskCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+			 count(1) 
+		from 
+			TB_DEPLOY_TASK
+		where 1=1
+    	<if test="null != id"> and id = #{id} </if>
+    	<if test="null != appId"> and APP_ID = #{appId} </if>
+    	<if test="null != type"> and type = #{type} </if>
+		<if test="null != approvalUser and '' != approvalUser"> and APPROVAL_USER = #{approvalUser} </if>
+		<if test="null != userCode and '' != userCode"> and CREATE_USER = #{userCode} </if>
+    	<if test="null != status"> and status = #{status} </if>
+	</select>
+	
+	<select id="queryDeployTaskPage" resultMap="DeployTaskMap" parameterType="java.util.Map">
+		select
+			<include refid="Query_Column"/>
+		from 
+			TB_DEPLOY_TASK
+		where 1=1
+		<if test="null != id"> and id = #{id} </if>
+    	<if test="null != appId"> and APP_ID = #{appId} </if>
+    	<if test="null != type"> and type = #{type} </if>
+		<if test="null != approvalUser and '' != approvalUser"> and APPROVAL_USER = #{approvalUser} </if>
+		<if test="null != userCode and '' != userCode"> and CREATE_USER = #{userCode} </if>
+    	<if test="null != status"> and status = #{status} </if>
+    	limit #{startRow}, #{pageSize}
+	</select>
+
+    
+</mapper>

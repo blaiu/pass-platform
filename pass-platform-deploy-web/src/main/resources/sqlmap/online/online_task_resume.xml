@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="OnlineTaskResumeMapper">
+
+	<resultMap id="OnlineTaskResumeMap" type="com.gome.autodeploy.domain.online.OnlineTaskResume">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="TASK_ID" property="taskId" jdbcType="INTEGER"/>
+		<result column="STATUS" property="status" jdbcType="INTEGER"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<insert id="addOnlineTaskResume" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.online.OnlineTaskResume">
+		insert into tb_online_task_resume (
+			TASK_ID, STATUS, CREATE_TIME, CREATE_USER
+		) values (
+			#{taskId}, #{status}, now(), #{createUser}
+		)
+	</insert>
+	    
+</mapper> 

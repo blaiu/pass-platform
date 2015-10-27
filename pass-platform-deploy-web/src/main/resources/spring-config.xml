@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+           default-autowire="byName">
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:/properties/*.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <import resource="spring/spring-config-datasource-mysql.xml"/>
+    <import resource="spring/spring-config-dao.xml"/>
+    <import resource="spring/spring-config-service.xml"/>
+<!--     <import resource="spring/spring-config-cache.xml"/> -->
+<!--     <import resource="spring/spring-config-shiro.xml"/> -->
+    <import resource="spring/spring-mvc.xml"/>
+    <import resource="spring/spring-config-kubernetes.xml"/>
+    <import resource="spring/spring-config-docker.xml"/>
+    <import resource="spring/spring-config-log.xml"/>
+    <import resource="spring/spring-config-jenkins.xml"/>
+
+    <context:annotation-config />
+    <context:component-scan base-package="com.gome.autodeploy"/>
+    
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="basename" value="classpath:message" />
+	</bean>
+    
+</beans>

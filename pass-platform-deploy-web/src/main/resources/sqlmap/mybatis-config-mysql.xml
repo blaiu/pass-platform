@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<!-- 是否启用缓存 -->
+		<setting name="cacheEnabled" value="true"/>
+		<!-- 延时加载 -->
+		<setting name="lazyLoadingEnabled" value="false"/>
+		<!-- 多个结果从单独的语句中返回 -->
+		<setting name="multipleResultSetsEnabled" value="true"/>
+		<!-- 列标签替代列名 -->
+		<setting name="useColumnLabel" value="true"/>
+		<!-- 允许JDBC生成的键 -->
+		<setting name="useGeneratedKeys" value="true"/>
+		<!-- 映射关系 -->
+		<setting name="autoMappingBehavior" value="PARTIAL"/>
+		<!-- 默认执行器 -->
+		<setting name="defaultExecutorType" value="SIMPLE"/>
+		<!-- 超时时间 -->
+		<setting name="defaultStatementTimeout" value="25000"/>
+	</settings>
+	<mappers>
+		<!-- app -->
+		<mapper resource="sqlmap/app/application.xml"/>
+		<mapper resource="sqlmap/app/application_member.xml"/>
+		<mapper resource="sqlmap/app/application_resource.xml"/>
+		<mapper resource="sqlmap/app/app.xml"/>
+		<mapper resource="sqlmap/app/app_expansion.xml"/>
+		
+		
+		<!--deploy  -->
+		<mapper resource="sqlmap/deploy/deploy_task.xml"/>
+		<mapper resource="sqlmap/deploy/deploy_resource.xml"/>
+		<mapper resource="sqlmap/deploy/container_config.xml"/>
+		
+		<!-- online -->
+		<mapper resource="sqlmap/online/online_task.xml"/>
+		<mapper resource="sqlmap/online/online_task_package.xml"/>
+		<mapper resource="sqlmap/online/online_task_resume.xml"/>
+		
+		<!-- auth -->
+		<mapper resource="sqlmap/auth/user.xml"/>
+		
+		<mapper resource="sqlmap/common/dictionary.xml"/>
+		
+		<mapper resource="sqlmap/project/project.xml"/>
+		<mapper resource="sqlmap/project/project_svn.xml"/>
+		<mapper resource="sqlmap/project/project_package.xml"/>
+		
+		<mapper resource="sqlmap/volume/volume.xml"/>
+	</mappers>
+</configuration>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="OnlineTaskPackageMapper">
+
+	<resultMap id="OnlineTaskPackageMap" type="com.gome.autodeploy.domain.online.OnlineTaskPackage">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="TASK_ID" property="taskId" jdbcType="INTEGER"/>
+		<result column="TYPE" property="type" jdbcType="INTEGER"/>
+		<result column="PACKAGE_NAME" property="packageName" jdbcType="VARCHAR"/>
+		<result column="PACKAGE_PATH" property="packagePath" jdbcType="VARCHAR"/>
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="CREATE_USER" property="createUser" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<insert id="addOnlineTaskPackage" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.online.OnlineTaskPackage">
+		insert into tb_online_task_package (
+			TASK_ID, 
+			TYPE, PACKAGE_NAME, PACKAGE_PATH, 
+			CREATE_TIME, CREATE_USER
+		) values (
+			#{taskId}, 
+			#{type}, #{packageName}, #{packagePath},
+			now(), #{createUser}
+		)
+	</insert>
+	
+	<delete id="removeOnlineTaskPackage" parameterType="java.util.Map">
+		delete from tb_online_task_package where id = #{id}
+	</delete>
+	
+	<select id="queryOnlineTaskPackageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+			 count(1) 
+		from 
+			tb_online_task
+		where 
+			1 = 1
+    		<if test="null != userCode and '' != userCode"> and create_user = #{userCode}</if>
+    		<if test="null != status"> and status = #{status} </if>
+	</select>
+	
+	<select id="queryOnlineTaskPackage" resultType="com.gome.autodeploy.domain.online.OnlineTaskPackage" parameterType="java.util.Map">
+		select
+			 a.id appId, a.name appName, k.id taskId, k.title title,
+			 p.id id, p.package_name packageName, p.package_path packagePath,
+			 p.create_user createUser, p.create_time createTime, p.type type
+		from 
+			tb_online_task k inner join tb_online_task_package p on p.task_id = k.id
+			inner join tb_application a on a.id = k.app_id
+		where 
+			1 = 1
+			<if test="null != status"> and k.status = #{status} </if>
+			<if test="null != userCode and '' != userCode"> and k.create_user = #{userCode} </if>
+			<if test="null != limit"> limit #{startRow}, #{pageSize} </if>
+	</select>
+    
+</mapper>

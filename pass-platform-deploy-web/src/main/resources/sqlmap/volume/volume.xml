@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="VolumeMapper">
+    
+    <resultMap id="VolumeMap" type="com.gome.autodeploy.domain.volume.Volume">
+		<result column="ID" property="id" jdbcType="INTEGER"/>
+		<result column="VOLUME_NAME" property="volumeName" jdbcType="VARCHAR"/>
+		<result column="VOLUME_SIZE" property="volumeSize" jdbcType="INTEGER"/>
+		<result column="OBJECTES" property="objectes" jdbcType="INTEGER"/>
+		<result column="VOLUME_ORDER" property="volumeOrder" jdbcType="INTEGER"/>
+		<result column="OBJECTS_SIZE" property="objectsSize" jdbcType="INTEGER"/>
+		<result column="BLOCK_NAME_PREFIX" property="blockNamePrefix" jdbcType="VARCHAR"/>
+		<result column="VOLUME_FORMAT" property="volumeFormat" jdbcType="INTEGER"/>
+		<result column="IS_DEL" property="isDel" jdbcType="INTEGER"/>
+		<result column="IS_USED" property="isUsed" jdbcType="INTEGER"/>
+		<result column="USER_ID" property="userId" jdbcType="INTEGER"/>
+		<result column="APP_ID" property="appId" jdbcType="INTEGER"/>
+		<result column="READONLY_FLAG" property="readOnlyFlag" jdbcType="INTEGER"/>
+		<result column="CUSTOM_PATH" property="customPath" jdbcType="VARCHAR"/>
+		
+	</resultMap>
+	
+	<sql id="Query_Column">
+		ID, VOLUME_NAME, VOLUME_SIZE, OBJECTES, VOLUME_ORDER, OBJECTS_SIZE, BLOCK_NAME_PREFIX, VOLUME_FORMAT, IS_DEL, IS_USED, USER_ID, APP_ID, READONLY_FLAG, CUSTOM_PATH
+	</sql>
+	
+	<insert id="addVolume" useGeneratedKeys="true" keyProperty="id" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		insert into volume (
+			VOLUME_NAME, VOLUME_SIZE, OBJECTES, VOLUME_ORDER, OBJECTS_SIZE, BLOCK_NAME_PREFIX, VOLUME_FORMAT, IS_DEL, IS_USED, USER_ID, APP_ID, READONLY_FLAG, CUSTOM_PATH
+		) values (
+			#{volumeName}, #{volumeSize}, #{objectes}, #{volumeOrder}, #{objectsSize}, #{blockNamePrefix}, #{volumeFormat}, 0, 0, #{userId}, #{appId}, #{readOnlyFlag}, #{customPath}
+		)
+	</insert>
+	
+	<update id="deleteVolume" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set is_del=1 where id= #{id}
+	</update>
+	
+	<update id="modifyVolume" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set
+		    volume_name = #{volumeName} ,volume_size = #{volumeSize}
+		where id= #{id}
+	</update>
+	
+	<update id="mountVolume" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set is_used=1 , app_id= #{appId}, custom_path=#{customPath} where id= #{id}
+	</update>
+	
+	<update id="deleteAppVolume" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set is_used=0, app_id=null where app_id= #{appId}
+	</update>
+	
+	<update id="formatVolume" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set is_used=0, app_id=null where id= #{id}
+	</update>
+	
+	<update id="updateVolumeDelFlag" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		update volume set
+		    IS_DEL = #{isDel}
+		where id= #{id}
+	</update>
+	
+	
+	<select id="queryVolume" resultMap="VolumeMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			volume
+		where 
+			is_del = 0
+			<if test="id != null">
+			   and id= #{id}
+			</if>
+	</select>
+	
+	<select id="queryVolumeById" resultMap="VolumeMap" parameterType="java.util.Map">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			volume
+		where
+		    is_del=0
+		    and id= #{id}
+	</select>
+	
+	<select id="queryVolumeByUserId" resultMap="VolumeMap" parameterType="java.lang.Integer">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			volume
+		where 
+			is_del = 0
+			and user_id= #{userId}
+	</select>
+	
+	<select id="queryVolumeByAppId" resultMap="VolumeMap" parameterType="java.lang.Integer">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			volume
+		where
+		    app_id= #{appId}
+	</select>
+	
+	<select id="queryVolumeNotUsed" resultMap="VolumeMap" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		select 
+			<include refid="Query_Column"/> 
+		from 
+			volume
+		where 
+			is_del = 0
+			and is_used=0 and user_id= #{userId}
+	</select>
+	
+	<select id="queryVolumeName" resultMap="VolumeMap" parameterType="com.gome.autodeploy.domain.volume.Volume">
+		select 
+		 <include refid="Query_Column"/>
+		 from 
+		     volume
+		where  IS_DEL = 0 and VOLUME_NAME = #{volumeName}
+	</select>
+	
+	
+</mapper>

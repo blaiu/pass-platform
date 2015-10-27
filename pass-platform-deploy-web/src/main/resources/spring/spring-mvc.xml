@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx.xsd        
+    ">
+
+
+ 
+
+	<!-- 启用spring mvc 注解 -->
+    <context:annotation-config />
+    <mvc:annotation-driven/>
+    <!-- 未找到相应mvc处理，会找下一个节点 -->
+    <mvc:default-servlet-handler/>
+
+    <!-- 设置使用注解的类所在的jar包 -->
+    <context:component-scan base-package="com.gome.autodeploy">
+    	<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>  
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+    
+    <!-- 完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    	<property name="messageConverters">
+	        <list>
+	            <ref bean="mappingJacksonHttpMessageConverter"/>
+	        </list>
+    	</property>
+    </bean>
+    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+	    <property name="supportedMediaTypes">
+	        <list>
+	            <value>text/html;charset=UTF-8</value>
+	        </list>
+	    </property>
+	</bean>
+    
+    <mvc:annotation-driven />
+	<!-- 异常统一处理 -->
+	<bean id="exceptionResolver" class="com.gome.autodeploy.web.exception.ExceptionHandler" />
+	
+    <!-- 异常配置 -->
+<!--     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> -->
+<!--         <property name="exceptionMappings"> -->
+<!--             <props> -->
+<!--                 <prop key="java.lang.Exception">errors/error.jsp</prop> -->
+<!--                 <prop key="java.lang.Throwable">errors/err.jsp</prop> -->
+<!--             </props> -->
+<!--         </property> -->
+<!--         <property name="statusCodes"> -->
+<!--             <props> -->
+<!--                 <prop key="errors/error">500</prop> -->
+<!--                 <prop key="errors/404">404</prop> -->
+<!--             </props> -->
+<!--         </property> -->
+<!--         <property name="warnLogCategory" value="WARN"/> -->
+<!--         <property name="defaultErrorView" value="errors/error.jsp"/> -->
+<!--         <property name="defaultStatusCode" value="500"/> -->
+<!--     </bean> -->
+
+	<bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+	
+	<bean id="viewResolver" class="com.gome.autodeploy.common.MultiViewResolver">
+        <property name="defaultViewResolver" ref="beanNameViewResolver"/>
+        <property name="viewResolverMap">
+            <map>
+                <entry>
+                    <key>
+                        <set>
+                            <value>.jsp</value>
+                        </set>
+                    </key>
+                    <ref bean="jspViewResolver"/>
+                </entry>
+<!--                 <entry> -->
+<!--                     <key> -->
+<!--                         <set> -->
+<!--                             <value>.vm</value> -->
+<!--                             <value>.htm</value> -->
+<!--                             <value>.html</value> -->
+<!--                         </set> -->
+<!--                     </key> -->
+<!--                     <ref bean="velocityViewResolver"/> -->
+<!--                 </entry> -->
+<!--                 <entry> -->
+<!--                     <key><value>.ftl</value></key> -->
+<!--                     <ref bean="freeMarkerViewResolver"/> -->
+<!--                 </entry> -->
+            </map>
+        </property>
+    </bean>
+    
+    <mvc:resources mapping="/css/**" location="/css/"/>  
+    <mvc:resources mapping="/font-awesome/**" location="/font-awesome/"/>  
+    <mvc:resources mapping="/font/**" location="/font/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
+    
+    <mvc:resources mapping="/js/**" location="/static_resources/javascript/"/>    
+    <mvc:resources mapping="/styles/**" location="/static_resources/css/"/>    
+    <mvc:resources mapping="/images/**" location="/static_resources/images/"/>  
+     <mvc:interceptors>  
+        <mvc:interceptor>  
+            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/views/**"/>
+            <mvc:exclude-mapping path="/login/**"/> 
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/font/**"/>
+            <mvc:exclude-mapping path="/resources/**"/>
+            <mvc:exclude-mapping path="/font-awesome/**"/>
+            <bean class="com.gome.autodeploy.web.interceptor.Interceptor"></bean>  
+        </mvc:interceptor>  
+    </mvc:interceptors> 
+	<!-- jsp 处理 -->
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/views/jsp/"/>   
+    </bean>
+    <!--  Velocity ViewResolver Configuration -->
+<!--     <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver"> -->
+<!--         <property name="order" value="0" /> -->
+<!--         <property name="contentType" value="text/html;charset=UTF-8" /> -->
+<!--         <property name="requestContextAttribute" value="req"/> -->
+<!--         <property name="viewClass" value="com.gome.autodeploy.common.VelocityToolbox2View"/> -->
+<!--         <property name="exposeRequestAttributes" value="true" /> -->
+<!--         <property name="toolboxConfigLocation" value="/WEB-INF/velocity/tools.xml" /> -->
+<!--     </bean> -->
+
+    <!-- Velocity Configuration -->     
+<!--     <bean id="velocityConfig" class = "org.springframework.web.servlet.view.velocity.VelocityConfigurer"> -->
+<!--         <property name="configLocation" value="classpath:velocity.properties"/> -->
+<!--         <property name="resourceLoaderPath" value="/views/vm/" /> -->
+<!--     </bean> -->
+    
+    <!--  FreeMarker ViewResolver Configuration -->
+<!--     <bean id="freeMarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">   -->
+<!--     	<property name="order" value="1" /> -->
+<!--         <property name="contentType" value="text/html;charset=UTF-8" /> -->
+<!--         <property name="requestContextAttribute" value="req"/> -->
+<!--         <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>   -->
+<!--     </bean>  -->
+    
+    <!-- FreeMarker Configuration -->     
+<!--     <bean id="freemarkerConfig"  class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">   -->
+<!--        	<property name="configLocation" value="classpath:freemarker.properties"/> -->
+<!--         <property name="templateLoaderPath" value="/views/ftl/"/>   -->
+<!--         <property name="freemarkerVariables"> -->
+<!--         	<map> -->
+<!--                 <entry key="xml_escape" value-ref="fmXmlEscape"/> -->
+<!--             </map> -->
+<!--         </property> -->
+<!--     </bean>    -->
+    
+<!--     <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/> -->
+	
+<!-- 	<import resource="spring-mvc-shiro.xml"/> -->
+</beans>
+
+
+
+
