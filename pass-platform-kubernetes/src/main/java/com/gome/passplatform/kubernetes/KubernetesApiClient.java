@@ -43,7 +43,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	private String cephUser;
 	private String cephSecretRef;
 	private String keyring;
+	private String cephKey;
 	
+
+	public String getCephKey() {
+		return cephKey;
+	}
+
+	public void setCephKey(String cephKey) {
+		this.cephKey = cephKey;
+	}
+
 	private static final ThreadLocal<Client> tl = new ThreadLocal<Client>();
 	
 	public KubernetesApiClient() {
@@ -75,7 +85,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		
 		secret.setMetadata(metadata);
 		Data data = new Data();
-		data.setKey("QVFCVWlQSlZLRlFYSVJBQXRpNWNoR3RSTFBFMGRqZmtwWWQ1VEE9PQo=");
+		data.setKey(cephKey);
 		secret.setData(data);
 		
 		try {
