@@ -13,6 +13,7 @@
 		<property name="cephUser" value="${kuber.ceph.user}"/>
 		<property name="keyring" value="${kuber.ceph.keyring}"/>
 		<property name="cephSecretRef" value="${kuber.ceph.secretRef}"/>
+		<property name="cephKey" value="${kuber.ceph.key}"/>
 	</bean>
 	
 	<bean id="expansionClient" class="com.gome.passplatform.kubernetes.ExpansionClient">
